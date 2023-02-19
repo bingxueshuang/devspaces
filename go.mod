@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/cloudflare/bn256 v0.0.0-20220804214613-39fbc7d184f0
+	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/labstack/echo/v4 v4.10.0
 )
 

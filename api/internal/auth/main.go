@@ -1,0 +1,15 @@
+package auth
+
+import (
+	"github.com/bingxueshuang/devspaces/api/internal/core"
+	"github.com/bingxueshuang/devspaces/db"
+	"github.com/labstack/echo/v4"
+)
+
+func Setup(g *echo.Group) {
+	g.POST("/register", RegisterHandler)
+	g.POST("/login", LoginHandler)
+	g.GET("/debug", func(c echo.Context) error {
+		return core.SendOK(c, db.ListUsers())
+	})
+}

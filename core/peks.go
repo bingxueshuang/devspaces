@@ -14,20 +14,27 @@ var (
 	SizeGT = 384
 )
 
-func KeyGen() (sk *big.Int, pk *PKey, err error) {
+func SharedKey(pk *PKey, sk *SKey) []byte {
+	a := sk.Key
+	bP := pk.Key
+	abP := new(bn256.G2).ScalarMult(bP, a)
+	return abP.Marshal()
+}
+
+func KeyGen() (sk *SKey, pk *PKey, err error) {
 	a, aP, err := bn256.RandomG2(rand.Reader)
 	if err != nil {
 		return
 	}
-	return a, &PKey{aP}, nil
+	return &SKey{a}, &PKey{aP}, nil
 }
 
-func KeyGenServer() (sk *big.Int, pk *PKeyServer, err error) {
+func KeyGenServer() (sk *SKey, pk *PKeyServer, err error) {
 	b, bQ, err := bn256.RandomGT(rand.Reader)
 	if err != nil {
 		return
 	}
-	return b, &PKeyServer{bQ}, nil
+	return &SKey{b}, &PKeyServer{bQ}, nil
 }
 
 func PEKS(word []byte, server *PKeyServer, receiver *PKey, sender *SKey) ([]byte, error) {
