@@ -27,6 +27,15 @@ func MatchUser(user *User) (ok bool, err error) {
 	return
 }
 
+func GetUser(uname string) (ok bool, user User, err error) {
+	for _, u := range users {
+		if u.Username == uname {
+			return true, *u, nil
+		}
+	}
+	return
+}
+
 func ListUsers() []User {
 	slice := make([]User, 0, len(users))
 	for _, u := range users {

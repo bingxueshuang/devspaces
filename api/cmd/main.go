@@ -33,6 +33,7 @@ func main() {
 	})
 	authGroup := e.Group("/auth")
 	auth.Setup(authGroup)
+	e.GET("/user/:uname", auth.UserHandler)
 	if err := e.Start(":5005"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

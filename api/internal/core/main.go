@@ -53,6 +53,14 @@ func BadRequest(c echo.Context, msg string, err error) error {
 	})
 }
 
+func NotFound(c echo.Context, msg string) error {
+	return c.JSON(http.StatusNotFound, Response{
+		Ok:    false,
+		Data:  nil,
+		Error: msg,
+	})
+}
+
 func ServerError(c echo.Context, err error) error {
 	return c.JSON(http.StatusInternalServerError, Response{
 		Ok:    false,
