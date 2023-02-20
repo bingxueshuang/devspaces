@@ -21,6 +21,14 @@ type Request struct {
 	Secret *string `json:"secret"`
 }
 
+type Message struct {
+	From    *string `json:"from"`
+	On      *string `json:"on"`
+	To      *string `json:"to"`
+	Keyword *string `json:"keyword"`
+	Data    *string `json:"data"`
+}
+
 type DevSpace struct {
 	Name   string   `json:"name"`
 	Tags   []string `json:"tags"`
