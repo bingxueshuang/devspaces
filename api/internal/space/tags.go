@@ -110,3 +110,21 @@ func ListTags(c echo.Context) error {
 	}
 	return core.SendOK(c, res)
 }
+
+func ListMessages(c echo.Context) error {
+	space := c.Param("dev")
+	tag := c.Param("tag")
+	mlist, err := db.ListMessages(tag, space)
+	if err != nil {
+		return core.ServerError(c, err)
+	}
+	msgs := make([]map[string]any, 0, len(mlist))
+	for _, m := range mlist {
+		msgs = append(msgs, map[string]any{
+			"from":    m.From,
+			"data":    hex.EncodeToString(m.Data),
+			"keyword": hex.EncodeToString(m.Keyword),
+		})
+	}
+	return core.SendOK(c, msgs)
+}

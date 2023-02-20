@@ -16,10 +16,10 @@ func AddMessage(m *Message) (ok bool, err error) {
 	return true, nil
 }
 
-func MessagesOn(tag string) ([]Message, error) {
+func ListMessages(tag string, on string) ([]Message, error) {
 	m := make([]Message, 0, len(msgs))
 	for _, msg := range msgs {
-		if msg.Tag == tag {
+		if msg.Tag == tag && msg.On == on {
 			m = append(m, *msg)
 		}
 	}
