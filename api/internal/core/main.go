@@ -29,6 +29,11 @@ type Message struct {
 	Data    *string `json:"data"`
 }
 
+type Tag struct {
+	Name     *string `json:"from"`
+	Trapdoor *string `json:"trapdoor"`
+}
+
 type DevSpace struct {
 	Name   *string `json:"name"`
 	Pubkey *string `json:"pubkey"`

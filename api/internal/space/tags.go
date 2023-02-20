@@ -27,6 +27,9 @@ func CreateDev(c echo.Context) error {
 	if err != nil {
 		return core.BadRequest(c, "invalid public key", err)
 	}
+	if !validateSpace(req) {
+		return core.BadRequest(c, "missing fields in request body", nil)
+	}
 	u := c.Get("user").(*jwt.Token)
 	claims := u.Claims.(*core.TokenClaims)
 	owner := claims.Username
@@ -50,11 +53,59 @@ func ListDev(c echo.Context) error {
 	if err != nil {
 		return core.ServerError(c, err)
 	}
-	res := make([]map[string]any, len(spaces))
+	res := make([]map[string]any, 0, len(spaces))
 	for _, s := range spaces {
 		res = append(res, map[string]any{
 			"name":   s.Name,
 			"pubkey": hex.EncodeToString(s.Pubkey),
+		})
+	}
+	return core.SendOK(c, res)
+}
+
+func validateTag(t *core.Tag) bool {
+	if t == nil ||
+		t.Name == nil ||
+		t.Trapdoor == nil {
+		return false
+	}
+	return true
+}
+
+func CreateTag(c echo.Context) error {
+	req := new(core.Tag)
+	if err := c.Bind(req); err != nil {
+		return core.BadRequest(c, "invalid request body", err)
+	}
+	if !validateTag(req) {
+		return core.BadRequest(c, "missing fields in request body", nil)
+	}
+	trapdoor, err := hex.DecodeString(*req.Trapdoor)
+	if err != nil {
+		return core.BadRequest(c, "invalid trapdoor", err)
+	}
+	space := c.Param("dev")
+	ok, err := db.AddTag(space, &db.Tag{
+		Name:     *req.Name,
+		Trapdoor: trapdoor,
+	})
+	if !ok || err != nil {
+		return core.ServerError(c, err)
+	}
+	return core.SendOK(c, nil)
+}
+
+func ListTags(c echo.Context) error {
+	space := c.Param("dev")
+	tags, err := db.ListTags(space)
+	if err != nil {
+		return core.ServerError(c, err)
+	}
+	res := make([]map[string]any, 0, len(tags))
+	for _, t := range tags {
+		res = append(res, map[string]any{
+			"name":     t.Name,
+			"trapdoor": hex.EncodeToString(t.Trapdoor),
 		})
 	}
 	return core.SendOK(c, res)

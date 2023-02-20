@@ -31,6 +31,16 @@ func AddTag(space string, tag *Tag) (ok bool, err error) {
 	return
 }
 
+func ListTags(sp string) ([]*Tag, error) {
+	ok, space, err := FindSpace(sp)
+	if !ok || err != nil {
+		return nil, err
+	}
+	tags := make([]*Tag, 0, len(space.Tags))
+	copy(tags, space.Tags)
+	return tags, nil
+}
+
 func ListSpaces(owner string) ([]Space, error) {
 	sp := make([]Space, 0, len(spaces))
 	for _, s := range spaces {

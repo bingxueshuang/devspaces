@@ -7,4 +7,6 @@ func Setup(g *echo.Group) {
 	g.POST("/:dev/send", SendHandler)
 	g.POST("/", CreateDev)
 	g.GET("/", ListDev)
+	g.POST("/:dev", CreateTag)
+	g.GET("/:dev", ListTags)
 }
