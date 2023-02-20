@@ -14,6 +14,20 @@ type KeyContext struct {
 	PKey *core.PKeyServer
 }
 
+type Request struct {
+	From   string `json:"from"`
+	On     string `json:"on"`
+	To     string `json:"to"`
+	Secret string `json:"secret"`
+}
+
+type DevSpace struct {
+	Name   string   `json:"name"`
+	Tags   []string `json:"tags"`
+	Owner  string   `json:"owner"`
+	Pubkey string   `json:"pubkey"`
+}
+
 type Response struct {
 	Ok    bool `json:"ok"`
 	Data  any  `json:"data"`

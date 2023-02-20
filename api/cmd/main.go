@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/bingxueshuang/devspaces/api/internal/space"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"log"
 	"net/http"
 
@@ -28,12 +30,15 @@ func main() {
 			return next(c)
 		}
 	})
-	e.GET("/", func(c echo.Context) error {
-		return api.SendOK(c, "hello world")
-	})
 	authGroup := e.Group("/auth")
 	auth.Setup(authGroup)
 	e.GET("/user/:uname", auth.UserHandler)
+	_ = e.Group("/space", echojwt.WithConfig(auth.Config))
+	e.GET("/dashboard", space.DashboardHandler, echojwt.WithConfig(auth.Config))
+	e.GET("/", func(c echo.Context) error {
+		return api.SendOK(c, "hello world")
+	})
+
 	if err := e.Start(":5005"); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
