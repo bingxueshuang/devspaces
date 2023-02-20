@@ -30,10 +30,8 @@ type Message struct {
 }
 
 type DevSpace struct {
-	Name   string   `json:"name"`
-	Tags   []string `json:"tags"`
-	Owner  string   `json:"owner"`
-	Pubkey string   `json:"pubkey"`
+	Name   *string `json:"name"`
+	Pubkey *string `json:"pubkey"`
 }
 
 type Response struct {

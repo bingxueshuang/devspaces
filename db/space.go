@@ -16,6 +16,31 @@ type Space struct {
 
 var spaces []*Space
 
+func AddSpace(s *Space) (bool, error) {
+	spaces = append(spaces, s)
+	return true, nil
+}
+
+func AddTag(space string, tag *Tag) (ok bool, err error) {
+	for _, s := range spaces {
+		if s.Name == space {
+			s.Tags = append(s.Tags, tag)
+			return true, nil
+		}
+	}
+	return
+}
+
+func ListSpaces(owner string) ([]Space, error) {
+	sp := make([]Space, 0, len(spaces))
+	for _, s := range spaces {
+		if s.Owner == owner {
+			sp = append(sp, *s)
+		}
+	}
+	return sp, nil
+}
+
 func FindSpace(space string) (ok bool, s Space, err error) {
 	for _, v := range spaces {
 		if v.Name == space {
