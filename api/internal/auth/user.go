@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"encoding/hex"
+
 	"github.com/bingxueshuang/devspaces/api/internal/core"
 	"github.com/bingxueshuang/devspaces/db"
 	"github.com/labstack/echo/v4"
@@ -17,6 +19,6 @@ func UserHandler(c echo.Context) error {
 	}
 	return core.SendOK(c, map[string]any{
 		"username": user.Username,
-		"pubkey":   user.Pubkey,
+		"pubkey":   hex.EncodeToString(user.Pubkey),
 	})
 }

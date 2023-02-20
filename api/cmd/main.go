@@ -14,6 +14,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func PubkeyHandler(c echo.Context) error {
+	serverKey := c.Get("ServerKey").(api.KeyContext)
+	pk := serverKey.PKey.Decode()
+	return api.SendOK(c, map[string]any{
+		"pubkey": pk,
+	})
+}
+
 func main() {
 	sk, pk, err := core.KeyGenServer()
 	if err != nil {

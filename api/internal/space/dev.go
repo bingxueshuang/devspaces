@@ -96,3 +96,14 @@ func SendHandler(c echo.Context) error {
 	}
 	return core.SendOK(c, nil)
 }
+
+func PubkeyHandler(c echo.Context) error {
+	ok, space, err := db.FindSpace(c.Param("dev"))
+	if !ok || err != nil {
+		return core.ServerError(c, err)
+	}
+	pk := hex.EncodeToString(space.Pubkey)
+	return core.SendOK(c, map[string]any{
+		"pubkey": pk,
+	})
+}
