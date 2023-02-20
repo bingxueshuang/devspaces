@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/bingxueshuang/devspaces/api/internal/space"
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"log"
 	"net/http"
+
+	"github.com/bingxueshuang/devspaces/api/internal/space"
+	echojwt "github.com/labstack/echo-jwt/v4"
 
 	"github.com/bingxueshuang/devspaces/api/internal/auth"
 	api "github.com/bingxueshuang/devspaces/api/internal/core"
@@ -33,7 +34,8 @@ func main() {
 	authGroup := e.Group("/auth")
 	auth.Setup(authGroup)
 	e.GET("/user/:uname", auth.UserHandler)
-	_ = e.Group("/space", echojwt.WithConfig(auth.Config))
+	ptdGroup := e.Group("/space", echojwt.WithConfig(auth.Config))
+	space.Setup(ptdGroup)
 	e.GET("/dashboard", space.DashboardHandler, echojwt.WithConfig(auth.Config))
 	e.GET("/", func(c echo.Context) error {
 		return api.SendOK(c, "hello world")
