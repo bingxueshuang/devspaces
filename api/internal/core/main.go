@@ -15,10 +15,10 @@ type KeyContext struct {
 }
 
 type Request struct {
-	From   string `json:"from"`
-	On     string `json:"on"`
-	To     string `json:"to"`
-	Secret string `json:"secret"`
+	From   *string `json:"from"`
+	On     *string `json:"on"`
+	To     *string `json:"to"`
+	Secret *string `json:"secret"`
 }
 
 type DevSpace struct {
@@ -76,9 +76,13 @@ func NotFound(c echo.Context, msg string) error {
 }
 
 func ServerError(c echo.Context, err error) error {
+	var msg any
+	if err != nil {
+		msg = err.Error()
+	}
 	return c.JSON(http.StatusInternalServerError, Response{
 		Ok:    false,
-		Data:  err.Error(),
+		Data:  msg,
 		Error: "sorry, could not process your request",
 	})
 }
