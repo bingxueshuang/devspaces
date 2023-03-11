@@ -3,6 +3,7 @@ package core
 import (
 	"bytes"
 	"crypto/rand"
+	"errors"
 	"math/big"
 
 	"github.com/cloudflare/bn256"
@@ -12,6 +13,15 @@ var (
 	SizeG1 = 64
 	SizeG2 = 129
 	SizeGT = 384
+	SizeSK = 32
+)
+
+var RandomSource = rand.Reader
+
+var (
+	ErrCiphertext = errors.New("invalid ciphertext")
+	ErrTrapdoor   = errors.New("invalid trapdoor")
+	ErrRandom     = errors.New("invalid source of randomness")
 )
 
 func SharedKey(pk *PKey, sk *SKey) []byte {
@@ -22,16 +32,18 @@ func SharedKey(pk *PKey, sk *SKey) []byte {
 }
 
 func KeyGen() (sk *SKey, pk *PKey, err error) {
-	a, aP, err := bn256.RandomG2(rand.Reader)
+	a, aP, err := bn256.RandomG2(RandomSource)
 	if err != nil {
+		err = errors.Join(ErrRandom, err)
 		return
 	}
 	return &SKey{a}, &PKey{aP}, nil
 }
 
 func KeyGenServer() (sk *SKey, pk *PKeyServer, err error) {
-	b, bQ, err := bn256.RandomGT(rand.Reader)
+	b, bQ, err := bn256.RandomGT(RandomSource)
 	if err != nil {
+		err = errors.Join(ErrRandom, err)
 		return
 	}
 	return &SKey{b}, &PKeyServer{bQ}, nil
@@ -70,34 +82,34 @@ func Test(ciphertext, trapdoor []byte, server *SKey) (ok bool, err error) {
 
 func testHelper(c, t []byte) (s1, s2 *bn256.GT, err error) {
 	n := SizeGT
+	// prevent index out of bounds
+	if len(c) != 2*n {
+		err = ErrCiphertext
+		return
+	}
+	if len(t) != 2*n {
+		err = ErrTrapdoor
+		return
+	}
 	c1 := new(bn256.GT)
 	c2 := new(bn256.GT)
 	t1 := new(bn256.GT)
 	t2 := new(bn256.GT)
-	_, err = c1.Unmarshal(c[:n])
-	if err != nil {
-		return
-	}
-	_, err = c2.Unmarshal(c[n:])
-	if err != nil {
-		return
-	}
-	_, err = t1.Unmarshal(t[:n])
-	if err != nil {
-		return
-	}
-	_, err = t2.Unmarshal(t[n:])
-	if err != nil {
-		return
-	}
+	// only possible error is bad number of bytes
+	// which is already handled above
+	_, _ = c1.Unmarshal(c[:n])
+	_, _ = c2.Unmarshal(c[n:])
+	_, _ = t1.Unmarshal(t[:n])
+	_, _ = t2.Unmarshal(t[n:])
 	s1 = new(bn256.GT).Add(c1, t1)
 	s2 = new(bn256.GT).Add(c2, t2)
 	return
 }
 
 func encryptHelper(w []byte, pubkey *bn256.GT, pk *bn256.G2, sk *big.Int) (ct1, pr, e *bn256.GT, err error) {
-	r, err := rand.Int(rand.Reader, bn256.Order)
+	r, err := rand.Int(RandomSource, bn256.Order)
 	if err != nil {
+		err = errors.Join(ErrRandom, err)
 		return
 	}
 	ct1 = new(bn256.GT).ScalarBaseMult(r)
