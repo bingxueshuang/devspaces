@@ -16,7 +16,7 @@ func TestSKey(t *testing.T) {
 		sk := &SKey{
 			Key: validInt,
 		}
-		got := sk.Decode()
+		got := sk.Bytes()
 		want := validBytes
 		if !bytes.Equal(got, want) {
 			t.Logf("expected: %v, got: %v", want, got)
@@ -25,7 +25,7 @@ func TestSKey(t *testing.T) {
 	})
 	t.Run("encode", func(t *testing.T) {
 		sk := new(SKey)
-		sk.Encode(validBytes)
+		sk.FromBytes(validBytes)
 		got := sk.Key
 		want := validInt
 		if want.Cmp(got) != 0 {
@@ -45,7 +45,7 @@ func TestPkey(t *testing.T) {
 			Key: validKey,
 		}
 		// check for panics
-		got := len(pk.Decode())
+		got := len(pk.Bytes())
 		want := SizeG2
 		if got != want {
 			t.Logf("expected: %v, got: %v", want, got)
@@ -54,7 +54,7 @@ func TestPkey(t *testing.T) {
 	})
 	t.Run("encode", func(t *testing.T) {
 		pk := new(PKey)
-		err := pk.Encode(validBytes)
+		err := pk.FromBytes(validBytes)
 		handleFatal(err, t)
 		tmp := new(bn256.G2).Neg(pk.Key)
 		tmp.Add(tmp, validKey)
@@ -75,7 +75,7 @@ func TestPkeyServer(t *testing.T) {
 			Key: validKey,
 		}
 		// check for panics
-		got := len(pk.Decode())
+		got := len(pk.Bytes())
 		want := SizeGT
 		if got != want {
 			t.Logf("expected: %v, got: %v", want, got)
@@ -84,7 +84,7 @@ func TestPkeyServer(t *testing.T) {
 	})
 	t.Run("encode", func(t *testing.T) {
 		pk := new(PKeyServer)
-		err := pk.Encode(validBytes)
+		err := pk.FromBytes(validBytes)
 		handleFatal(err, t)
 		tmp := new(bn256.GT).Neg(pk.Key)
 		tmp.Add(tmp, validKey)

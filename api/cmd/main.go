@@ -16,7 +16,7 @@ import (
 
 func PubkeyHandler(c echo.Context) error {
 	serverKey := c.Get("ServerKey").(api.KeyContext)
-	pk := serverKey.PKey.Decode()
+	pk := serverKey.PKey.Bytes()
 	return api.SendOK(c, map[string]any{
 		"pubkey": pk,
 	})
