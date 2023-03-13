@@ -2,14 +2,13 @@ package keyio
 
 import (
 	"fmt"
-	"github.com/bingxueshuang/devspaces/core"
 	"io"
 	"os"
 )
 
-// WriteKey writes to file.
+// WriteFile writes hexadecimal of data to file.
 // Fallback to standard output if stdout is set.
-func WriteKey(key core.EllipticKey, filename string, stdout bool) error {
+func WriteFile(data []byte, filename string, stdout bool) error {
 	var writer io.WriteCloser = os.Stdout
 	if filename != "" {
 		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
@@ -20,7 +19,7 @@ func WriteKey(key core.EllipticKey, filename string, stdout bool) error {
 		writer = file
 	}
 	if stdout {
-		_, err := fmt.Fprintf(writer, "%x", key.Bytes())
+		_, err := fmt.Fprintf(writer, "%x", data)
 		if err != nil {
 			return err
 		}

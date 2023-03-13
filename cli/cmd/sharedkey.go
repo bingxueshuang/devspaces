@@ -60,7 +60,7 @@ can perform independently.`,
 		key := core.SharedKey(pk, sk)
 
 		// output
-		err = keyio.WriteKey(key, oFlag, true)
+		err = keyio.WriteFile(key.Bytes(), oFlag, true)
 		if err != nil {
 			return err
 		}
@@ -75,7 +75,7 @@ func init() {
 	sharedkeyCmd.Flags().StringP("output", "o", "", "file to output shared key")
 	sharedkeyCmd.Flags().StringP("skey", "s", "", "private key file")
 	_ = sharedkeyCmd.MarkFlagFilename("skey")
-	sharedkeyCmd.Flags().StringP("pkey", "s", "", "public key file")
+	sharedkeyCmd.Flags().StringP("pkey", "p", "", "public key file")
 	_ = sharedkeyCmd.MarkFlagFilename("pkey")
 	sharedkeyCmd.Flags().String("skey-hex", "", "hexadecimal private key")
 	sharedkeyCmd.Flags().String("pkey-hex", "", "hexadecimal public key")
