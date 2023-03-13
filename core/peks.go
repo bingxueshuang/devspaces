@@ -24,11 +24,13 @@ var (
 	ErrRandom     = errors.New("invalid source of randomness")
 )
 
-func SharedKey(pk *PKey, sk *SKey) []byte {
+func SharedKey(pk *PKey, sk *SKey) *PKey {
 	a := sk.Key
 	bP := pk.Key
 	abP := new(bn256.G2).ScalarMult(bP, a)
-	return abP.Marshal()
+	return &PKey{
+		Key: abP,
+	}
 }
 
 func KeyGen() (sk *SKey, pk *PKey, err error) {

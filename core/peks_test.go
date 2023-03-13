@@ -80,14 +80,14 @@ func TestSharedKey(t *testing.T) {
 	t.Run("commutative", func(t *testing.T) {
 		shared12 := SharedKey(pk1, sk2)
 		shared21 := SharedKey(pk2, sk1)
-		if !bytes.Equal(shared12, shared21) {
+		if !bytes.Equal(shared12.Bytes(), shared21.Bytes()) {
 			t.Logf("%x != %x", shared12, shared21)
 			t.Fatalf("shared key is expected to be same either way")
 		}
 	})
 	t.Run("length", func(t *testing.T) {
 		shared := SharedKey(pk1, sk2)
-		got := len(shared)
+		got := len(shared.Bytes())
 		want := SizeG2
 		if got != want {
 			t.Logf("expected: %v, got: %v", want, got)
