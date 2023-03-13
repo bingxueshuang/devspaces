@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var ErrNoFile = errors.New("input file not provided")
+
 // ReadKey sets key from hexKey if set,
 // otherwise read from filename.
 // If filename is empty string.
@@ -21,7 +23,7 @@ func ReadKey(key core.EllipticKey, filename string, hexKey string, stdin bool) e
 		}
 		byteslice = data
 	} else {
-		data, err := readFile(filename, stdin)
+		data, err := ReadFile(filename, stdin)
 		if err != nil {
 			return err
 		}
@@ -30,9 +32,9 @@ func ReadKey(key core.EllipticKey, filename string, hexKey string, stdin bool) e
 	return key.FromBytes(byteslice)
 }
 
-// read from file.
+// ReadFile reads bytes from file.
 // fall back to stdin if fallback is set.
-func readFile(source string, fallback bool) ([]byte, error) {
+func ReadFile(source string, fallback bool) ([]byte, error) {
 	var reader io.Reader = os.Stdin
 	if source != "" {
 		file, err := os.Open(source)
@@ -42,7 +44,7 @@ func readFile(source string, fallback bool) ([]byte, error) {
 		defer file.Close()
 		reader = file
 	} else if !fallback {
-		return nil, errors.New("no secret key file provided")
+		return nil, ErrNoFile
 	}
 	return io.ReadAll(reader)
 }

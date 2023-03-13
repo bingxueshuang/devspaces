@@ -39,11 +39,11 @@ and output the private key to the user.
 		}
 
 		// output
-		err = keyio.WriteKey(sk, skFlag, true)
+		err = keyio.WriteFile(sk.Bytes(), skFlag, true)
 		if err != nil {
 			return err
 		}
-		err = keyio.WriteKey(pk, pkFlag, false)
+		err = keyio.WriteFile(pk.Bytes(), pkFlag, false)
 		if err != nil {
 			return err
 		}

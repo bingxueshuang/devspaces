@@ -60,7 +60,7 @@ can perform independently.`,
 		key := core.SharedKey(pk, sk)
 
 		// output
-		err = keyio.WriteKey(key, oFlag, true)
+		err = keyio.WriteFile(key.Bytes(), oFlag, true)
 		if err != nil {
 			return err
 		}

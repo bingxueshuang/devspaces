@@ -49,10 +49,11 @@ Take user private key and output the corresponding public key`,
 		}
 
 		// output
-		err = keyio.WriteKey(pk, pkFile, true)
+		err = keyio.WriteFile(pk.Bytes(), pkFile, true)
 		if err != nil {
 			return err
 		}
+
 		return nil
 	},
 }
