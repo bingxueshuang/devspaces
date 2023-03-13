@@ -25,7 +25,8 @@ func TestSKey(t *testing.T) {
 	})
 	t.Run("encode", func(t *testing.T) {
 		sk := new(SKey)
-		sk.FromBytes(validBytes)
+		err := sk.FromBytes(validBytes)
+		handleFatal(err, t)
 		got := sk.Key
 		want := validInt
 		if want.Cmp(got) != 0 {

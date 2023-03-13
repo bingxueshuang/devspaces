@@ -33,19 +33,23 @@ and output the private key to the user.
 		if err != nil {
 			return err
 		}
+
+		// core logic
 		sk, pk, err := core.KeyGen()
 		skHex := hex.EncodeToString(sk.Bytes())
 		pkHex := hex.EncodeToString(pk.Bytes())
+
 		if skFlag == "" {
 			fmt.Print(skHex)
 		} else {
-			err := os.WriteFile(skFlag, []byte(skHex), 0666)
+			err := os.WriteFile(skFlag, []byte(skHex), 0644)
 			if err != nil {
 				return err
 			}
 		}
+
 		if pkFlag != "" {
-			err := os.WriteFile(pkFlag, []byte(pkHex), 0666)
+			err := os.WriteFile(pkFlag, []byte(pkHex), 0644)
 			if err != nil {
 				return err
 			}

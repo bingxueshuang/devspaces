@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>core: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/bingxueshuang/devspaces/core/keys.go (71.4%)</option>
+				
+				<option value="file1">github.com/bingxueshuang/devspaces/core/peks.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package core
+
+import (
+        "math/big"
+
+        "github.com/cloudflare/bn256"
+)
+
+type SKey struct {
+        Key *big.Int
+}
+
+func (sk *SKey) Bytes() []byte <span class="cov8" title="1">{
+        return sk.Key.Bytes()
+}</span>
+
+func (sk *SKey) FromBytes(m []byte) <span class="cov8" title="1">{
+        sk.Key = new(big.Int).SetBytes(m)
+}</span>
+
+type PKey struct {
+        Key *bn256.G2
+}
+
+func (pk *PKey) Bytes() []byte <span class="cov8" title="1">{
+        return pk.Key.Marshal()
+}</span>
+
+func (pk *PKey) FromBytes(m []byte) error <span class="cov8" title="1">{
+        pk.Key = new(bn256.G2)
+        _, err := pk.Key.Unmarshal(m)
+        return err
+}</span>
+
+func (pk *PKey) FromSKey(sk *SKey) error <span class="cov0" title="0">{
+        pk.Key = new(bn256.G2).ScalarBaseMult(sk.Key)
+        return nil
+}</span>
+
+type PKeyServer struct {
+        Key *bn256.GT
+}
+
+func (pk *PKeyServer) Bytes() []byte <span class="cov8" title="1">{
+        return pk.Key.Marshal()
+}</span>
+
+func (pk *PKeyServer) FromBytes(m []byte) error <span class="cov8" title="1">{
+        pk.Key = new(bn256.GT)
+        _, err := pk.Key.Unmarshal(m)
+        return err
+}</span>
+
+func (pk *PKeyServer) FromSkey(sk *SKey) error <span class="cov0" title="0">{
+        pk.Key = new(bn256.GT).ScalarBaseMult(sk.Key)
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package core
+
+import (
+        "bytes"
+        "crypto/rand"
+        "errors"
+        "math/big"
+
+        "github.com/cloudflare/bn256"
+)
+
+var (
+        SizeG1 = 64
+        SizeG2 = 129
+        SizeGT = 384
+        SizeSK = 32
+)
+
+var RandomSource = rand.Reader
+
+var (
+        ErrCiphertext = errors.New("invalid ciphertext")
+        ErrTrapdoor   = errors.New("invalid trapdoor")
+        ErrRandom     = errors.New("invalid source of randomness")
+)
+
+func SharedKey(pk *PKey, sk *SKey) []byte <span class="cov8" title="1">{
+        a := sk.Key
+        bP := pk.Key
+        abP := new(bn256.G2).ScalarMult(bP, a)
+        return abP.Marshal()
+}</span>
+
+func KeyGen() (sk *SKey, pk *PKey, err error) <span class="cov8" title="1">{
+        a, aP, err := bn256.RandomG2(RandomSource)
+        if err != nil </span><span class="cov8" title="1">{
+                err = errors.Join(ErrRandom, err)
+                return
+        }</span>
+        <span class="cov8" title="1">return &amp;SKey{a}, &amp;PKey{aP}, nil</span>
+}
+
+func KeyGenServer() (sk *SKey, pk *PKeyServer, err error) <span class="cov8" title="1">{
+        b, bQ, err := bn256.RandomGT(RandomSource)
+        if err != nil </span><span class="cov8" title="1">{
+                err = errors.Join(ErrRandom, err)
+                return
+        }</span>
+        <span class="cov8" title="1">return &amp;SKey{b}, &amp;PKeyServer{bQ}, nil</span>
+}
+
+func PEKS(word []byte, server *PKeyServer, receiver *PKey, sender *SKey) ([]byte, error) <span class="cov8" title="1">{
+        ct1, pr, e, err := encryptHelper(word, server.Key, receiver.Key, sender.Key)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">c1 := ct1.Marshal()
+        c2 := new(bn256.GT).Add(pr, e).Marshal()
+        return bytes.Join([][]byte{c1, c2}, nil), nil</span>
+}
+
+func Trapdoor(word []byte, server *PKeyServer, sender *PKey, receiver *SKey) ([]byte, error) <span class="cov8" title="1">{
+        ct1, pr, e, err := encryptHelper(word, server.Key, sender.Key, receiver.Key)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">e.Neg(e)
+        t1 := ct1.Marshal()
+        t2 := new(bn256.GT).Add(pr, e).Marshal()
+        return bytes.Join([][]byte{t1, t2}, nil), nil</span>
+}
+
+func Test(ciphertext, trapdoor []byte, server *SKey) (ok bool, err error) <span class="cov8" title="1">{
+        s1, s2, err := testHelper(ciphertext, trapdoor)
+        if err != nil </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">A := s1.ScalarMult(s1, server.Key).Marshal()
+        B := s2.Marshal()
+        return bytes.Equal(A, B), nil</span>
+}
+
+func testHelper(c, t []byte) (s1, s2 *bn256.GT, err error) <span class="cov8" title="1">{
+        n := SizeGT
+        // prevent index out of bounds
+        if len(c) != 2*n </span><span class="cov8" title="1">{
+                err = ErrCiphertext
+                return
+        }</span>
+        <span class="cov8" title="1">if len(t) != 2*n </span><span class="cov8" title="1">{
+                err = ErrTrapdoor
+                return
+        }</span>
+        <span class="cov8" title="1">c1 := new(bn256.GT)
+        c2 := new(bn256.GT)
+        t1 := new(bn256.GT)
+        t2 := new(bn256.GT)
+        // only possible error is bad number of bytes
+        // which is already handled above
+        _, _ = c1.Unmarshal(c[:n])
+        _, _ = c2.Unmarshal(c[n:])
+        _, _ = t1.Unmarshal(t[:n])
+        _, _ = t2.Unmarshal(t[n:])
+        s1 = new(bn256.GT).Add(c1, t1)
+        s2 = new(bn256.GT).Add(c2, t2)
+        return</span>
+}
+
+func encryptHelper(w []byte, pubkey *bn256.GT, pk *bn256.G2, sk *big.Int) (ct1, pr, e *bn256.GT, err error) <span class="cov8" title="1">{
+        r, err := rand.Int(RandomSource, bn256.Order)
+        if err != nil </span><span class="cov8" title="1">{
+                err = errors.Join(ErrRandom, err)
+                return
+        }</span>
+        <span class="cov8" title="1">ct1 = new(bn256.GT).ScalarBaseMult(r)
+        h := bn256.HashG1(w, nil)
+        k := new(bn256.G2).ScalarMult(pk, sk)
+        e = bn256.Pair(h, k)
+        pr = new(bn256.GT).ScalarMult(pubkey, r)
+        return</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
