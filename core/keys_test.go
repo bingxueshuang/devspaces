@@ -12,35 +12,48 @@ func TestSKey(t *testing.T) {
 	validInt, _, err := bn256.RandomG1(rand.Reader)
 	handleFatal(err, t)
 	validBytes := validInt.Bytes()
-	t.Run("decode", func(t *testing.T) {
-		sk := &SKey{
-			Key: validInt,
-		}
-		got := sk.Bytes()
+	validSKey := &SKey{
+		Key: validInt,
+	}
+	t.Run("ToBytes", func(t *testing.T) {
+		got := validSKey.Bytes()
 		want := validBytes
 		if !bytes.Equal(got, want) {
 			t.Logf("expected: %v, got: %v", want, got)
-			t.Fatal("incorrect secret key decoding")
+			t.Fatal("incorrect secret key to bytes")
 		}
 	})
-	t.Run("encode", func(t *testing.T) {
+	t.Run("FromBytes", func(t *testing.T) {
 		sk := new(SKey)
-		sk.FromBytes(validBytes)
+		err := sk.FromBytes(validBytes)
+		handleFatal(err, t)
 		got := sk.Key
 		want := validInt
 		if want.Cmp(got) != 0 {
 			t.Logf("expected: %x, got: %x", want, got)
-			t.Fatal("incorrect secret key encoding")
+			t.Fatal("incorrect secret key from bytes")
+		}
+	})
+	t.Run("FromSKey", func(t *testing.T) {
+		sk := new(SKey)
+		err := sk.FromSKey(validSKey)
+		handleFatal(err, t)
+		got := sk.Key
+		want := validInt
+		if want.Cmp(got) != 0 {
+			t.Logf("expected: %x, got: %x", want, got)
+			t.Fatal("incorrect secret key from SKey")
 		}
 	})
 }
 
 func TestPkey(t *testing.T) {
 	zero := []byte{0x0}
-	_, validKey, err := bn256.RandomG2(rand.Reader)
+	sk, validKey, err := bn256.RandomG2(rand.Reader)
+	validSKey := &SKey{Key: sk}
 	handleFatal(err, t)
 	validBytes := validKey.Marshal()
-	t.Run("decode", func(t *testing.T) {
+	t.Run("ToBytes", func(t *testing.T) {
 		pk := &PKey{
 			Key: validKey,
 		}
@@ -49,17 +62,27 @@ func TestPkey(t *testing.T) {
 		want := SizeG2
 		if got != want {
 			t.Logf("expected: %v, got: %v", want, got)
-			t.Fatal("incorrect public key decoding")
+			t.Fatal("incorrect public key to bytes")
 		}
 	})
-	t.Run("encode", func(t *testing.T) {
+	t.Run("FromBytes", func(t *testing.T) {
 		pk := new(PKey)
 		err := pk.FromBytes(validBytes)
 		handleFatal(err, t)
 		tmp := new(bn256.G2).Neg(pk.Key)
 		tmp.Add(tmp, validKey)
 		if !bytes.Equal(zero, tmp.Marshal()) {
-			t.Fatal("incorrect public key encoding")
+			t.Fatal("incorrect public key from bytes")
+		}
+	})
+	t.Run("FromSKey", func(t *testing.T) {
+		pk := new(PKey)
+		err := pk.FromSKey(validSKey)
+		handleFatal(err, t)
+		tmp := new(bn256.G2).Neg(pk.Key)
+		tmp.Add(tmp, validKey)
+		if !bytes.Equal(zero, tmp.Marshal()) {
+			t.Fatal("incorrect public key from SKey")
 		}
 	})
 }
@@ -67,10 +90,11 @@ func TestPkey(t *testing.T) {
 func TestPkeyServer(t *testing.T) {
 	zero := make([]byte, SizeGT)
 	zero[len(zero)-1] = 0x1
-	_, validKey, err := bn256.RandomGT(rand.Reader)
+	sk, validKey, err := bn256.RandomGT(rand.Reader)
+	validSKey := &SKey{Key: sk}
 	handleFatal(err, t)
 	validBytes := validKey.Marshal()
-	t.Run("decode", func(t *testing.T) {
+	t.Run("ToBytes", func(t *testing.T) {
 		pk := &PKeyServer{
 			Key: validKey,
 		}
@@ -79,10 +103,10 @@ func TestPkeyServer(t *testing.T) {
 		want := SizeGT
 		if got != want {
 			t.Logf("expected: %v, got: %v", want, got)
-			t.Fatal("incorrect public key decoding")
+			t.Fatal("incorrect public key to bytes")
 		}
 	})
-	t.Run("encode", func(t *testing.T) {
+	t.Run("FromBytes", func(t *testing.T) {
 		pk := new(PKeyServer)
 		err := pk.FromBytes(validBytes)
 		handleFatal(err, t)
@@ -90,7 +114,17 @@ func TestPkeyServer(t *testing.T) {
 		tmp.Add(tmp, validKey)
 		if !bytes.Equal(zero, tmp.Marshal()) {
 			t.Logf("expected: %v, got: %d", zero, len(tmp.Marshal()))
-			t.Fatal("incorrect public key encoding")
+			t.Fatal("incorrect public key from bytes")
+		}
+	})
+	t.Run("FromSKey", func(t *testing.T) {
+		pk := new(PKeyServer)
+		err := pk.FromSKey(validSKey)
+		handleFatal(err, t)
+		tmp := new(bn256.GT).Neg(pk.Key)
+		tmp.Add(tmp, validKey)
+		if !bytes.Equal(zero, tmp.Marshal()) {
+			t.Fatal("incorrect public key from SKey")
 		}
 	})
 }

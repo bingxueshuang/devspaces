@@ -6,11 +6,9 @@ This file is a part of CLI application for Devspace.
 package cmd
 
 import (
-	"encoding/hex"
-	"fmt"
+	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // keygenCmd represents the keygen command
@@ -33,23 +31,23 @@ and output the private key to the user.
 		if err != nil {
 			return err
 		}
+
+		// core logic
 		sk, pk, err := core.KeyGen()
-		skHex := hex.EncodeToString(sk.Bytes())
-		pkHex := hex.EncodeToString(pk.Bytes())
-		if skFlag == "" {
-			fmt.Print(skHex)
-		} else {
-			err := os.WriteFile(skFlag, []byte(skHex), 0666)
-			if err != nil {
-				return err
-			}
+		if err != nil {
+			return err
 		}
-		if pkFlag != "" {
-			err := os.WriteFile(pkFlag, []byte(pkHex), 0666)
-			if err != nil {
-				return err
-			}
+
+		// output
+		err = keyio.WriteKey(sk, skFlag, true)
+		if err != nil {
+			return err
 		}
+		err = keyio.WriteKey(pk, pkFlag, false)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	},
 }
