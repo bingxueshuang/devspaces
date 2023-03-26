@@ -10,4 +10,5 @@ func Setup(g *echo.Group) {
 	g.POST("/:dev", CreateTag)
 	g.GET("/:dev", ListTags)
 	g.GET("/:dev/pubkey", PubkeyHandler)
+	g.GET("/:dev/:tag", ListMessages)
 }

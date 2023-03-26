@@ -64,6 +64,6 @@ func init() {
 	pubkeyCmd.Flags().StringP("pkey", "p", "", "file to output public key")
 	pubkeyCmd.Flags().StringP("skey", "s", "", "private key file")
 	_ = pubkeyCmd.MarkFlagFilename("skey") // error happens only when flag does not exist
-	pubkeyCmd.Flags().BytesHex("skey-hex", nil, "hexadecimal user private key")
+	pubkeyCmd.Flags().String("skey-hex", "", "hexadecimal user private key")
 	pubkeyCmd.MarkFlagsMutuallyExclusive("skey", "skey-hex")
 }
