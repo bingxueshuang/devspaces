@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bingxueshuang/devspaces/core"
+	"golang.org/x/term"
 	"io"
 	"os"
 )
@@ -47,4 +48,16 @@ func ReadFile(source string, fallback bool) ([]byte, error) {
 		return nil, ErrNoFile
 	}
 	return io.ReadAll(reader)
+}
+
+// ReadPassword reads a line of input from the terminal
+// without local echo and returns the input string.
+func ReadPassword() (string, error) {
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		return "", err
+	}
+	defer term.Restore(int(os.Stdin.Fd()), oldState)
+	t := term.NewTerminal(os.Stdin, "")
+	return t.ReadPassword("Enter password: ")
 }
