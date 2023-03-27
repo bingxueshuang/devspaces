@@ -101,8 +101,8 @@ the devspace api server`,
 func init() {
 	rootCmd.AddCommand(loginCmd)
 
-	registerCmd.Flags().StringP("username", "u", "", "Username for Signup")
-	registerCmd.Flags().StringP("password", "p", "", "Password for Signup")
-	registerCmd.Flags().StringP("output", "o", "", "file to output login token")
-	_ = registerCmd.MarkFlagRequired("username")
+	loginCmd.Flags().StringP("username", "u", "", "Username for Signup")
+	loginCmd.Flags().StringP("password", "p", "", "Password for Signup")
+	loginCmd.Flags().StringP("output", "o", "", "file to output login token")
+	_ = loginCmd.MarkFlagRequired("username")
 }

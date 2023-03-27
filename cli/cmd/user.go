@@ -68,7 +68,11 @@ the user`,
 		if res.StatusCode != http.StatusOK {
 			return errors.New(res.Status)
 		}
-		pubkey, ok := data.Data["pubkey"].(string)
+		datamap, ok := data.Data.(map[string]any)
+		if !ok {
+			return errors.New("invalid json response")
+		}
+		pubkey, ok := datamap["pubkey"].(string)
 		if !ok {
 			return errors.New("invalid json response")
 		}

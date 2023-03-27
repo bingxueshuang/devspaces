@@ -6,7 +6,6 @@ This file is a part of CLI application for Devspace.
 package cmd
 
 import (
-	"errors"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -22,10 +21,6 @@ Dev is a CLI tool for PEKS utilities for interaction with
 Devspace. Dev provides useful methods for key generation,
 encryption of data, create shared keys, ciphertext for
 given keyword and trapdoor generation.`,
-
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return errors.New("'dev' has no default action")
-	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
