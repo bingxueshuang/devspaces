@@ -25,7 +25,7 @@ Given a particular devspace and if the user has
 permission to create tags on it (the owner), then
 create a new tag and add it under the devspace.`,
 	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"localhost:5005", "localhost:8080", "api.devspace.com"},
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
 		devspace, err := cmd.PersistentFlags().GetString("devspace")

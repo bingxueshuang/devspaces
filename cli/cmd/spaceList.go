@@ -19,7 +19,7 @@ var spaceListCmd = &cobra.Command{
 	Short:     "List devspaces owned by a user",
 	Long:      `List devspaces owned by a user`,
 	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"localhost:5005", "localhost:8080", "api.devspace.com"},
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
 		token, err := cmd.PersistentFlags().GetString("token")

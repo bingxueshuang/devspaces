@@ -25,7 +25,7 @@ var registerCmd = &cobra.Command{
 Register a new user to the devspace server using
 username, password and public key`,
 	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"localhost:5005", "localhost:8080", "api.devspace.com"},
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
 		pkFlag, err := cmd.Flags().GetString("pkey")

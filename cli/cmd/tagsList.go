@@ -21,7 +21,7 @@ var tagsListCmd = &cobra.Command{
 
 Given a devspace, fetch and list the tags under it.`,
 	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"localhost:5005", "localhost:8080", "api.devspace.com"},
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
 		devspace, err := cmd.PersistentFlags().GetString("devspace")

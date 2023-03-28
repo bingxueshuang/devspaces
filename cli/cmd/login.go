@@ -24,7 +24,7 @@ var loginCmd = &cobra.Command{
 Take the username and password of the user and login to
 the devspace api server`,
 	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"localhost:5005", "localhost:8080", "api.devspace.com"},
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
 		username, err := cmd.Flags().GetString("username")
@@ -89,7 +89,11 @@ the devspace api server`,
 		if code != http.StatusOK {
 			return errors.New(http.StatusText(code))
 		}
-		token, ok := data.Data["token"].(string)
+		datamap, ok := data.Data.(map[string]any)
+		if !ok {
+			return errors.New("invalid json response")
+		}
+		token, ok := datamap["token"].(string)
 		if !ok {
 			return errors.New("invalid json response")
 		}
