@@ -32,7 +32,7 @@ create a new tag and add it under the devspace.`,
 		if err != nil {
 			return err
 		}
-		token, err := tagsCmd.PersistentFlags().GetString("token")
+		tokenFlag, err := tagsCmd.PersistentFlags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -58,6 +58,10 @@ create a new tag and add it under the devspace.`,
 		if name == "" {
 			return errors.New("no tag name supplied")
 		}
+		token, err := keyio.ReadFile(tokenFlag, false)
+		if err != nil {
+			return err
+		}
 
 		// core
 		client := new(http.Client)
@@ -75,7 +79,7 @@ create a new tag and add it under the devspace.`,
 			return err
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Authorization", "Bearer "+string(token))
 		res, err := client.Do(req)
 		if err != nil {
 			return err

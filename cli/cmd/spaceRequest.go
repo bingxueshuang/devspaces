@@ -28,7 +28,7 @@ Invite a user for collaboration on a devspace.`,
 	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.Flags().GetString("token")
+		tokenFlag, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -55,6 +55,10 @@ Invite a user for collaboration on a devspace.`,
 		if err != nil {
 			return err
 		}
+		token, err := keyio.ReadFile(tokenFlag, false)
+		if err != nil {
+			return err
+		}
 
 		// core
 		client := new(http.Client)
@@ -72,7 +76,7 @@ Invite a user for collaboration on a devspace.`,
 			return err
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Authorization", "Bearer "+string(token))
 		res, err := client.Do(req)
 		if err != nil {
 			return err

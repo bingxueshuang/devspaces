@@ -28,7 +28,7 @@ based on the encrypted keyword using PEKS.`,
 	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.Flags().GetString("token")
+		tokenFlag, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -64,6 +64,10 @@ based on the encrypted keyword using PEKS.`,
 			}
 			keyword = string(kw)
 		}
+		token, err := keyio.ReadFile(tokenFlag, false)
+		if err != nil {
+			return err
+		}
 
 		// core
 		client := new(http.Client)
@@ -81,7 +85,7 @@ based on the encrypted keyword using PEKS.`,
 			return err
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Authorization", "Bearer "+string(token))
 		res, err := client.Do(req)
 		if err != nil {
 			return err

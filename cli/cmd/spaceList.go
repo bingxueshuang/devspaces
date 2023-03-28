@@ -8,6 +8,7 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
+	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
@@ -22,7 +23,7 @@ var spaceListCmd = &cobra.Command{
 	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.Flags().GetString("token")
+		tokenFlag, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -31,6 +32,10 @@ var spaceListCmd = &cobra.Command{
 		// input
 		if server == "" {
 			return errors.New("server url not supplied")
+		}
+		token, err := keyio.ReadFile(tokenFlag, false)
+		if err != nil {
+			return err
 		}
 
 		// core
@@ -44,7 +49,7 @@ var spaceListCmd = &cobra.Command{
 			return err
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Authorization", "Bearer "+string(token))
 		res, err := client.Do(req)
 		if err != nil {
 			return err
