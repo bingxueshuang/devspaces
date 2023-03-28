@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"github.com/bingxueshuang/devspaces/cli/keyio"
@@ -71,7 +72,7 @@ username, password and public key`,
 		err = json.NewEncoder(buf).Encode(map[string]any{
 			"username": username,
 			"password": password,
-			"pubkey":   pk,
+			"pubkey":   hex.EncodeToString(pk.Bytes()),
 		})
 		if err != nil {
 			return err

@@ -15,15 +15,14 @@ import (
 
 // spaceListCmd represents the spaceList command
 var spaceListCmd = &cobra.Command{
-	Use:              "list",
-	Short:            "List devspaces owned by a user",
-	Long:             `List devspaces owned by a user`,
-	Args:             cobra.ExactArgs(1),
-	ValidArgs:        []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
-	TraverseChildren: true,
+	Use:       "list",
+	Short:     "List devspaces owned by a user",
+	Long:      `List devspaces owned by a user`,
+	Args:      cobra.ExactArgs(1),
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := spaceCmd.PersistentFlags().GetString("token")
+		token, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}

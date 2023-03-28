@@ -17,7 +17,6 @@ var spaceCmd = &cobra.Command{
 
 Create a devspace, list the tags in a devspace, send a devspace
 collaboration request or send a message on devspace.`,
-	TraverseChildren: true,
 }
 
 func init() {

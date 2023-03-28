@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"github.com/bingxueshuang/devspaces/cli/keyio"
@@ -18,15 +19,14 @@ import (
 
 // spaceCreateCmd represents the spaceCreate command
 var spaceCreateCmd = &cobra.Command{
-	Use:              "create",
-	Short:            "Create a new DevSpace",
-	Long:             `Create a new DevSpace.`,
-	Args:             cobra.ExactArgs(1),
-	ValidArgs:        []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
-	TraverseChildren: true,
+	Use:       "create",
+	Short:     "Create a new DevSpace",
+	Long:      `Create a new DevSpace.`,
+	Args:      cobra.ExactArgs(1),
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := spaceCmd.PersistentFlags().GetString("token")
+		token, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -59,7 +59,7 @@ var spaceCreateCmd = &cobra.Command{
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(map[string]any{
 			"name":   name,
-			"pubkey": pubkey,
+			"pubkey": hex.EncodeToString(pk.Bytes()),
 		})
 		if err != nil {
 			return err
