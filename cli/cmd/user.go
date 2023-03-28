@@ -76,7 +76,7 @@ the user`,
 		if !ok {
 			return errors.New("invalid json response")
 		}
-		err = keyio.WriteFile([]byte(pubkey), oFlag, true)
+		err = keyio.WriteString(pubkey, oFlag, true)
 		return err
 	},
 }

@@ -1,0 +1,13 @@
+goos: linux
+goarch: amd64
+pkg: github.com/bingxueshuang/devspaces/core
+cpu: 11th Gen Intel(R) Core(TM) i3-1115G4 @ 3.00GHz
+BenchmarkKeyGen       	    2618	    461741 ns/op	     416 B/op	       8 allocs/op
+BenchmarkKeyGenServer 	    1086	   1094423 ns/op	     576 B/op	       9 allocs/op
+BenchmarkSharedKey    	    2583	    483435 ns/op	     272 B/op	       3 allocs/op
+BenchmarkTrapdoor     	     289	   4164973 ns/op	   56491 B/op	     505 allocs/op
+BenchmarkPEKS         	     286	   4146666 ns/op	   56523 B/op	     506 allocs/op
+BenchmarkTest/true    	    1057	   1140144 ns/op	    3120 B/op	      11 allocs/op
+BenchmarkTest/false   	    1048	   1141229 ns/op	    3120 B/op	      11 allocs/op
+PASS
+ok  	github.com/bingxueshuang/devspaces/core	9.777s

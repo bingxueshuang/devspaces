@@ -6,6 +6,7 @@ This file is a part of CLI application for Devspace.
 package cmd
 
 import (
+	"encoding/hex"
 	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
@@ -60,7 +61,7 @@ can perform independently.`,
 		key := core.SharedKey(pk, sk)
 
 		// output
-		err = keyio.WriteFile(key.Bytes(), oFlag, true)
+		err = keyio.WriteString(hex.EncodeToString(key.Bytes()), oFlag, true)
 		if err != nil {
 			return err
 		}

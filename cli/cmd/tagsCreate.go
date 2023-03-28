@@ -24,15 +24,16 @@ var tagsCreateCmd = &cobra.Command{
 Given a particular devspace and if the user has
 permission to create tags on it (the owner), then
 create a new tag and add it under the devspace.`,
-	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	Args:             cobra.ExactArgs(1),
+	ValidArgs:        []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	TraverseChildren: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		devspace, err := cmd.PersistentFlags().GetString("devspace")
+		devspace, err := tagsCmd.PersistentFlags().GetString("devspace")
 		if err != nil {
 			return err
 		}
-		token, err := cmd.PersistentFlags().GetString("token")
+		token, err := tagsCmd.PersistentFlags().GetString("token")
 		if err != nil {
 			return err
 		}

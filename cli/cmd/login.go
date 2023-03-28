@@ -97,7 +97,7 @@ the devspace api server`,
 		if !ok {
 			return errors.New("invalid json response")
 		}
-		err = keyio.WriteFile([]byte(token), oFlag, true)
+		err = keyio.WriteString(token, oFlag, true)
 		return err
 	},
 }

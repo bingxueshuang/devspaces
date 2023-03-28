@@ -6,6 +6,7 @@ This file is a part of CLI application for Devspace.
 package cmd
 
 import (
+	"encoding/hex"
 	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
@@ -39,11 +40,11 @@ and output the private key to the user.
 		}
 
 		// output
-		err = keyio.WriteFile(sk.Bytes(), skFlag, true)
+		err = keyio.WriteString(hex.EncodeToString(sk.Bytes()), skFlag, true)
 		if err != nil {
 			return err
 		}
-		err = keyio.WriteFile(pk.Bytes(), pkFlag, false)
+		err = keyio.WriteString(hex.EncodeToString(pk.Bytes()), pkFlag, false)
 		if err != nil {
 			return err
 		}

@@ -17,6 +17,7 @@ var tagsCmd = &cobra.Command{
 
 Given a particular devspace, perform actions on its tags like
 adding a new tag, list all the tags or see a particular tag`,
+	TraverseChildren: true,
 }
 
 func init() {

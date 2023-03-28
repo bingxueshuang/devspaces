@@ -18,14 +18,15 @@ import (
 
 // spaceCreateCmd represents the spaceCreate command
 var spaceCreateCmd = &cobra.Command{
-	Use:       "create",
-	Short:     "Create a new DevSpace",
-	Long:      `Create a new DevSpace.`,
-	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	Use:              "create",
+	Short:            "Create a new DevSpace",
+	Long:             `Create a new DevSpace.`,
+	Args:             cobra.ExactArgs(1),
+	ValidArgs:        []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	TraverseChildren: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.PersistentFlags().GetString("token")
+		token, err := spaceCmd.PersistentFlags().GetString("token")
 		if err != nil {
 			return err
 		}

@@ -16,21 +16,18 @@ var ErrNoFile = errors.New("input file not provided")
 // If filename is empty string.
 // Fallback to standard input if stdin is true.
 func ReadKey(key core.EllipticKey, filename string, hexKey string, stdin bool) error {
-	var byteslice []byte
-	if hexKey != "" {
-		data, err := hex.DecodeString(hexKey)
-		if err != nil {
-			return nil
-		}
-		byteslice = data
-	} else {
+	if hexKey == "" {
 		data, err := ReadFile(filename, stdin)
 		if err != nil {
 			return err
 		}
-		byteslice = data
+		hexKey = string(data)
 	}
-	return key.FromBytes(byteslice)
+	data, err := hex.DecodeString(hexKey)
+	if err != nil {
+		return nil
+	}
+	return key.FromBytes(data)
 }
 
 // ReadFile reads bytes from file.

@@ -31,3 +31,9 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
+type Response struct {
+	Ok    bool `json:"ok"`
+	Data  any  `json:"data"`
+	Error any  `json:"error"`
+}

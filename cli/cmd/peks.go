@@ -6,6 +6,7 @@ This file is a part of CLI application for Devspace.
 package cmd
 
 import (
+	"encoding/hex"
 	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
@@ -89,7 +90,7 @@ as input and output the public key searchable encryption of the keyword.`,
 		}
 
 		// output
-		err = keyio.WriteFile(peks, oFlag, true)
+		err = keyio.WriteString(hex.EncodeToString(peks), oFlag, true)
 		if err != nil {
 			return err
 		}

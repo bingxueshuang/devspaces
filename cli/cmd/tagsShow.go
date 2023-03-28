@@ -21,15 +21,16 @@ var tagsShowCmd = &cobra.Command{
 
 Given the devspace and access permission, fetch all the messages belonging
 to a particular tag.`,
-	Args:      cobra.ExactArgs(1),
-	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	Args:             cobra.ExactArgs(1),
+	ValidArgs:        []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
+	TraverseChildren: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		devspace, err := cmd.PersistentFlags().GetString("devspace")
+		devspace, err := tagsCmd.PersistentFlags().GetString("devspace")
 		if err != nil {
 			return err
 		}
-		token, err := cmd.PersistentFlags().GetString("token")
+		token, err := tagsCmd.PersistentFlags().GetString("token")
 		if err != nil {
 			return err
 		}
