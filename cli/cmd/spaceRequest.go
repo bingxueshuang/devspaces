@@ -28,7 +28,7 @@ Invite a user for collaboration on a devspace.`,
 	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.Flags().GetString("token")
+		token, err := cmd.PersistentFlags().GetString("token")
 		if err != nil {
 			return err
 		}

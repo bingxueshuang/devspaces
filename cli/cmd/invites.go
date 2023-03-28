@@ -13,16 +13,16 @@ import (
 	"net/url"
 )
 
-// spaceListCmd represents the spaceList command
-var spaceListCmd = &cobra.Command{
-	Use:       "list",
-	Short:     "List devspaces owned by a user",
-	Long:      `List devspaces owned by a user`,
+// invitesCmd represents the invites command
+var invitesCmd = &cobra.Command{
+	Use:       "invites",
+	Short:     "List all collaboration invites",
+	Long:      `List all collaboration invites.`,
 	Args:      cobra.ExactArgs(1),
 	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// flags
-		token, err := cmd.PersistentFlags().GetString("token")
+		token, err := cmd.Flags().GetString("token")
 		if err != nil {
 			return err
 		}
@@ -35,7 +35,7 @@ var spaceListCmd = &cobra.Command{
 
 		// core
 		client := new(http.Client)
-		serverURL, err := url.JoinPath(server, "/space/")
+		serverURL, err := url.JoinPath(server, "/dashboard/")
 		if err != nil {
 			return err
 		}
@@ -69,5 +69,6 @@ var spaceListCmd = &cobra.Command{
 }
 
 func init() {
-	spaceCmd.AddCommand(spaceListCmd)
+	rootCmd.AddCommand(invitesCmd)
+	invitesCmd.Flags().StringP("token", "k", "", "login token")
 }
