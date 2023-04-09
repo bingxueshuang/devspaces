@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"log"
 	"net/http"
 
@@ -18,7 +19,7 @@ func PubkeyHandler(c echo.Context) error {
 	serverKey := c.Get("ServerKey").(api.KeyContext)
 	pk := serverKey.PKey.Bytes()
 	return api.SendOK(c, map[string]any{
-		"pubkey": pk,
+		"pubkey": hex.EncodeToString(pk),
 	})
 }
 
@@ -46,6 +47,7 @@ func main() {
 	ptdGroup := e.Group("/space", echojwt.WithConfig(auth.Config))
 	space.Setup(ptdGroup)
 	e.GET("/dashboard", space.DashboardHandler, echojwt.WithConfig(auth.Config))
+	e.GET("/pubkey", PubkeyHandler)
 	e.GET("/", func(c echo.Context) error {
 		return api.SendOK(c, "hello world")
 	})

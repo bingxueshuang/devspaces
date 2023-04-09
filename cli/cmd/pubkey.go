@@ -7,10 +7,85 @@ package cmd
 
 import (
 	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
 )
+
+func pkFromSkey(cmd *cobra.Command) (core.EllipticKey, error) {
+	// flags
+	skFile, err := cmd.Flags().GetString("skey")
+	if err != nil {
+		return nil, err
+	}
+	skHex, err := cmd.Flags().GetString("skey-hex")
+	if err != nil {
+		return nil, err
+	}
+
+	// input
+	sk := new(core.SKey)
+	err = keyio.ReadKey(sk, skFile, skHex, true)
+	if err != nil {
+		return nil, err
+	}
+
+	// core logic
+	pk := new(core.PKey)
+	err = pk.FromSKey(sk)
+	return pk, err
+}
+
+func pkFromServer(srv string) (core.EllipticKey, error) {
+	// core
+	client := new(http.Client)
+	serverURL, err := url.JoinPath(srv, "/pubkey")
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("GET", serverURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	data := new(Response)
+	err = json.NewDecoder(res.Body).Decode(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// output
+	if res.StatusCode != http.StatusOK {
+		return nil, errors.New(res.Status)
+	}
+	pk, ok := data.Data.(map[string]any)
+	if !ok {
+		fmt.Println(data)
+		return nil, errors.New("invalid response")
+	}
+	pkHex, ok := pk["pubkey"].(string)
+	if !ok {
+		fmt.Println(pk)
+		return nil, errors.New("invalid response")
+	}
+	pkey := new(core.PKeyServer)
+	pkBytes, err := hex.DecodeString(pkHex)
+	if err != nil {
+		return nil, err
+	}
+	err = pkey.FromBytes(pkBytes)
+	return pkey, err
+}
 
 // pubkeyCmd represents the pubkey command
 var pubkeyCmd = &cobra.Command{
@@ -19,43 +94,28 @@ var pubkeyCmd = &cobra.Command{
 	Long: `Generate Public Key from a given Private key
 
 Take user private key and output the corresponding public key`,
-	Args: cobra.NoArgs,
+	Args:      cobra.MaximumNArgs(1),
+	ValidArgs: []string{"http://localhost:5005", "http://localhost:8080", "https://api.devspace.com"},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// flags
-		skFile, err := cmd.Flags().GetString("skey")
-		if err != nil {
-			return err
-		}
-		skHex, err := cmd.Flags().GetString("skey-hex")
-		if err != nil {
-			return err
-		}
+		var err error
+		var pk core.EllipticKey
 		pkFile, err := cmd.Flags().GetString("pkey")
 		if err != nil {
 			return err
 		}
-
-		// input
-		sk := new(core.SKey)
-		err = keyio.ReadKey(sk, skFile, skHex, true)
+		switch len(args) {
+		case 0:
+			pk, err = pkFromSkey(cmd)
+		case 1:
+			pk, err = pkFromServer(args[0])
+		default:
+			panic("accepts only one argument")
+		}
 		if err != nil {
 			return err
 		}
-
-		// core logic
-		pk := new(core.PKey)
-		err = pk.FromSKey(sk)
-		if err != nil {
-			return err
-		}
-
 		// output
-		err = keyio.WriteString(hex.EncodeToString(pk.Bytes()), pkFile, true)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return keyio.WriteString(hex.EncodeToString(pk.Bytes()), pkFile, true)
 	},
 }
 
