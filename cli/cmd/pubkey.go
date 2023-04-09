@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -70,12 +69,10 @@ func pkFromServer(srv string) (core.EllipticKey, error) {
 	}
 	pk, ok := data.Data.(map[string]any)
 	if !ok {
-		fmt.Println(data)
 		return nil, errors.New("invalid response")
 	}
 	pkHex, ok := pk["pubkey"].(string)
 	if !ok {
-		fmt.Println(pk)
 		return nil, errors.New("invalid response")
 	}
 	pkey := new(core.PKeyServer)

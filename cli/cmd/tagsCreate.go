@@ -9,10 +9,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/bingxueshuang/devspaces/cli/keyio"
-	"github.com/spf13/cobra"
 	"net/http"
 	"net/url"
+
+	"github.com/bingxueshuang/devspaces/cli/keyio"
+	"github.com/spf13/cobra"
 )
 
 // tagsCreateCmd represents the tagsCreate command
@@ -68,7 +69,7 @@ create a new tag and add it under the devspace.`,
 		serverURL, err := url.JoinPath(server, "/space/", devspace)
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(map[string]any{
-			"name":     name,
+			"from":     name,
 			"trapdoor": trapdoor,
 		})
 		if err != nil {

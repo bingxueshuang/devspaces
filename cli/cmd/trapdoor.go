@@ -7,21 +7,23 @@ package cmd
 
 import (
 	"encoding/hex"
+
 	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"github.com/bingxueshuang/devspaces/core"
 	"github.com/spf13/cobra"
 )
 
-// peksCmd represents the peks command
-var peksCmd = &cobra.Command{
-	Use:   "peks",
-	Short: "Get Public key searchable encryption of provided keyword",
-	Long: `Get Public key searchable encryption of provided keyword.
+// trapdoorCmd represents the trapdoor command
+var trapdoorCmd = &cobra.Command{
+	Use:   "trapdoor",
+	Short: "Get trapdoor for a given keyword",
+	Long: `Get PEKS trapdoor for a given keyword.
 
-Take keyword, sender private key, receiver public key and server public key
-as input and output the public key searchable encryption of the keyword.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// flags
+Take the keyword, server public key, receiver secret key and
+sender public key from the command line and output trapdoor
+for the given keyword`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error { // flags
 		oFlag, err := cmd.Flags().GetString("output")
 		if err != nil {
 			return err
@@ -84,7 +86,7 @@ as input and output the public key searchable encryption of the keyword.`,
 		}
 
 		// core logic
-		peks, err := core.PEKS([]byte(keyword), server, pk, sk)
+		peks, err := core.Trapdoor([]byte(keyword), server, pk, sk)
 		if err != nil {
 			return err
 		}
@@ -100,22 +102,22 @@ as input and output the public key searchable encryption of the keyword.`,
 }
 
 func init() {
-	rootCmd.AddCommand(peksCmd)
+	rootCmd.AddCommand(trapdoorCmd)
 
-	peksCmd.Flags().StringP("output", "o", "", "file to output encrypted keyword")
-	peksCmd.Flags().StringP("skey", "s", "", "private key file")
-	_ = peksCmd.MarkFlagFilename("skey")
-	peksCmd.Flags().StringP("pkey", "p", "", "public key file")
-	_ = peksCmd.MarkFlagFilename("pkey")
-	peksCmd.Flags().StringP("server", "r", "", "server public key file")
-	_ = peksCmd.MarkFlagFilename("server")
-	peksCmd.Flags().String("server-hex", "", "hexadecimal server public key")
-	peksCmd.Flags().String("skey-hex", "", "hexadecimal private key")
-	peksCmd.Flags().String("pkey-hex", "", "hexadecimal public key")
-	peksCmd.Flags().StringP("file", "f", "", "keyword file")
-	_ = peksCmd.MarkFlagFilename("file")
-	peksCmd.Flags().StringP("keyword", "k", "", "keyword text")
-	peksCmd.MarkFlagsMutuallyExclusive("skey", "skey-hex")
-	peksCmd.MarkFlagsMutuallyExclusive("pkey", "pkey-hex")
-	peksCmd.MarkFlagsMutuallyExclusive("file", "keyword")
+	trapdoorCmd.Flags().StringP("output", "o", "", "file to output trapdoor")
+	trapdoorCmd.Flags().StringP("skey", "s", "", "private key file")
+	_ = trapdoorCmd.MarkFlagFilename("skey")
+	trapdoorCmd.Flags().StringP("pkey", "p", "", "public key file")
+	_ = trapdoorCmd.MarkFlagFilename("pkey")
+	trapdoorCmd.Flags().StringP("server", "r", "", "server public key file")
+	_ = trapdoorCmd.MarkFlagFilename("server")
+	trapdoorCmd.Flags().String("server-hex", "", "hexadecimal server public key")
+	trapdoorCmd.Flags().String("skey-hex", "", "hexadecimal private key")
+	trapdoorCmd.Flags().String("pkey-hex", "", "hexadecimal public key")
+	trapdoorCmd.Flags().StringP("file", "f", "", "keyword file")
+	_ = trapdoorCmd.MarkFlagFilename("file")
+	trapdoorCmd.Flags().StringP("keyword", "k", "", "keyword text")
+	trapdoorCmd.MarkFlagsMutuallyExclusive("skey", "skey-hex")
+	trapdoorCmd.MarkFlagsMutuallyExclusive("pkey", "pkey-hex")
+	trapdoorCmd.MarkFlagsMutuallyExclusive("file", "keyword")
 }

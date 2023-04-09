@@ -7,11 +7,13 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"github.com/bingxueshuang/devspaces/cli/keyio"
 	"net/http"
 	"net/url"
+
+	"github.com/bingxueshuang/devspaces/cli/keyio"
 
 	"github.com/spf13/cobra"
 )
@@ -55,7 +57,6 @@ based on the encrypted keyword using PEKS.`,
 		if err != nil {
 			return err
 		}
-		message := string(msg)
 		keyword := kwHex
 		if keyword == "" {
 			kw, err := keyio.ReadFile(kwFlag, false)
@@ -74,7 +75,7 @@ based on the encrypted keyword using PEKS.`,
 		serverURL, err := url.JoinPath(server, "/space/", devspace, "send")
 		buf := new(bytes.Buffer)
 		err = json.NewEncoder(buf).Encode(map[string]any{
-			"data":    message,
+			"data":    hex.EncodeToString(msg),
 			"keyword": keyword,
 		})
 		if err != nil {
