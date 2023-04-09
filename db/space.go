@@ -36,7 +36,7 @@ func ListTags(sp string) ([]*Tag, error) {
 	if !ok || err != nil {
 		return nil, err
 	}
-	tags := make([]*Tag, 0, len(space.Tags))
+	tags := make([]*Tag, len(space.Tags))
 	copy(tags, space.Tags)
 	return tags, nil
 }
